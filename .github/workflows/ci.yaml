@@ -1,0 +1,100 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build-and-upload-docker-image:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out source code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get the latest tag or use default
+        id: latest-tag
+        run: |
+          TAG=$(git describe --tags $(git rev-list --tags --max-count=1) 2>/dev/null || echo "0.0.0")
+          VERSION=${TAG#v}
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+
+      - name: Set the tag for the image
+        run: |
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          # Main branch gets the latest tag
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            IMAGE_TAG="latest"
+          # Commits without a PR number get the SHA
+          elif [[ -z "$PR_NUMBER" ]]; then
+            SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
+            IMAGE_TAG="${SHORT_SHA}"
+          # PRs get the PR number and the SHA
+          else
+            SHORT_SHA=$(echo "${{ github.event.pull_request.head.sha }}" | cut -c1-7)
+            IMAGE_TAG="pr-${PR_NUMBER}-${SHORT_SHA}"
+          fi
+          echo "IMAGE_TAG=${IMAGE_TAG}" >> $GITHUB_ENV
+          
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build locally
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: mhlyva
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile
+          push: false
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ env.IMAGE_TAG }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.REPOSITORY }}:cache
+          cache-to: type=registry,image-manifest=true,oci-mediatypes=true,ref=${{ env.REGISTRY }}/${{ env.REPOSITORY }}:cache,mode=max
+          load: true
+
+      - name: Scan Docker Image with Grype
+        id: scan
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: mhlyva
+        uses: anchore/scan-action@v3
+        with:
+          image: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ env.IMAGE_TAG }}
+          output-format: 'json'
+          fail-build: false
+          severity-cutoff: 'high'
+
+      - name: Upload Grype Scan Results as an Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: grype-scan-results
+          path: ${{ steps.scan.outputs.json }}
+
+      - name: Push image to registry
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: mhlyva
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ env.IMAGE_TAG }}

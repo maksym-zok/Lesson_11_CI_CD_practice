@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.app_name }}
+data:
+  .env: |
+    NODE_ENV=development
+    PORT=3000
+    COOKIE_EXPIRATION_HOURS=24
+    JWT_ACCESS_EXPIRATION_MINUTES=30
+    JWT_REFRESH_EXPIRATION_DAYS=30
+    # SMTP configuration options for the email service
+    # For testing, you can use a fake SMTP service like Ethereal: https://ethereal.email/create
+    SMTP_HOST=email-server
+    SMTP_PORT=587
+    EMAIL_FROM=support@yourapp.com

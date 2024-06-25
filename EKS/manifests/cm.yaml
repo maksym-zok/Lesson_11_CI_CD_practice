@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-hello
+data:
+  lesson_number: "8"
+  lesson_topic: "K8s concepts"
+
+  config.json: |
+    {
+      "lesson_number": 8,
+      "lesson_topic": "K8s concepts"
+    }

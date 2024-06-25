@@ -1,0 +1,28 @@
+services:
+  lesson:
+    # build: .
+    image: 637423460784.dkr.ecr.us-east-1.amazonaws.com/devops:mhlyva
+    ports:
+      - "3000:3000"
+    environment:
+      SQL_USERNAME: postgres
+      SQL_HOST: pg
+      SQL_DATABASE_NAME: postgres
+      SQL_PASSWORD: postgres
+    volumes:
+      - type: bind
+        source: .env.example
+        target: /home/node/app/.env
+        read_only: true
+  pg: 
+    image: postgres:16
+    ports:
+      - "5432:5432"
+    environment:
+       POSTGRES_PASSWORD: postgres
+       POSTGRES_USER: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:

@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-hello
+  labels:
+    app: nginx-hello
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx-hello
+  template:
+    metadata:
+      labels:
+        app: nginx-hello
+    spec:
+      containers:
+        - name: nginx-hello
+          image: nginxdemos/hello
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /var/lib/nginx/config.json
+              name: config
+              subPath: config.json
+          env:
+            - name: test
+              value: test
+            - name: lesson_number
+              valueFrom:
+                configMapKeyRef:
+                  name: nginx-hello
+                  key: lesson_number
+            - name: lesson_topic
+              valueFrom:
+                secretKeyRef:
+                  name: nginx-hello
+                  key: lesson_topic
+      volumes:
+        - name: config
+          configMap:
+            name: nginx-hello
