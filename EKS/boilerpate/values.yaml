@@ -1,6 +1,6 @@
 app_name: boilerplate
 replicas: 3
 app_port: 3000
-app_tag: "v0.0.5"
+app_tag: "v0.0.6"
 acm_arn: arn:aws:acm:eu-central-1:637423460784:certificate/561103b1-afb2-4bb8-9f7e-9879597cf9fd
 ecr_repository: 637423460784.dkr.ecr.eu-central-1.amazonaws.com/mhlyva
