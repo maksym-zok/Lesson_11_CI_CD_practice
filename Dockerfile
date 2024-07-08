@@ -12,6 +12,8 @@ RUN yarn install
 
 COPY .env.example .env
 
+ENV TEST_VAR=true
+
 EXPOSE 3000
 
 CMD [ "yarn", "dev" ]

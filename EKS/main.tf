@@ -228,7 +228,19 @@ resource "aws_route53_record" "main" {
   type    = "A"
 
   alias {
-    name                   = "k8s-boilerplate-014a3ef7b1-293092610.eu-central-1.elb.amazonaws.com"
+    name                   = "k8s-boilerplate-014a3ef7b1-127719792.eu-central-1.elb.amazonaws.com"
+    zone_id                = "Z215JYRZR1TBD5"
+    evaluate_target_health = true
+  }
+}
+
+resource "aws_route53_record" "argo" {
+  zone_id = "Z0620347WH4DMYRGKNMV"
+  name    = "argo.mhlyva.sid24.xyz"
+  type    = "A"
+
+  alias {
+    name                   = "k8s-argocd-argocdar-92ca2b98cb-1453331482.eu-central-1.elb.amazonaws.com"
     zone_id                = "Z215JYRZR1TBD5"
     evaluate_target_health = true
   }

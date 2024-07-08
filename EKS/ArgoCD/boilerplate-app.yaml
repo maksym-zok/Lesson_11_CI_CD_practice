@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: boilerplate
+  namespace: argo-cd
+spec:
+  destination:
+    namespace: default
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    helm:
+      valueFiles:
+        - values.yaml
+    path: EKS/boilerpate
+    repoURL: git@github.com:maksym-zok/Lesson_11_CI_CD_practice.git
+    targetRevision: main
+  syncPolicy:
+    automated: {}
