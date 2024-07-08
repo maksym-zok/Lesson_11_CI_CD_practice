@@ -1,0 +1,35 @@
+global:
+  domain: argo.mhlyva.sid24.xyz
+
+configs:
+  params:
+    server.insecure: true
+  credentialTemplates:
+    ssh-creds:
+      url: git@github.com:maksym-zok/Lesson_11_CI_CD_practice.git
+      sshPrivateKey: |
+        -----BEGIN OPENSSH PRIVATE KEY-----
+        b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
+        QyNTUxOQAAACD5r90arHNvl+1yGl2RsVxsLYl7R62MX2n3rreB8dDwGgAAAKDGi5oExoua
+        BAAAAAtzc2gtZWQyNTUxOQAAACD5r90arHNvl+1yGl2RsVxsLYl7R62MX2n3rreB8dDwGg
+        AAAECwE22b7b3/tPLCXXLvQdnUt8vf0CWSH3+WK6b1T3deqvmv3Rqsc2+X7XIaXZGxXGwt
+        iXtHrYxfafeut4Hx0PAaAAAAFm1ha3N5bS5obHl2YUBnbWFpbC5jb20BAgMEBQYH
+        -----END OPENSSH PRIVATE KEY-----
+  repositories:
+    devops-course:
+      url: git@github.com:maksym-zok/Lesson_11_CI_CD_practice.git
+server:
+  ingress:
+    enabled: true
+    controller: aws
+    ingressClassName: alb
+    annotations:
+      alb.ingress.kubernetes.io/scheme: internet-facing
+      alb.ingress.kubernetes.io/target-type: ip
+      alb.ingress.kubernetes.io/backend-protocol: HTTP
+      alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":80}, {"HTTPS":443}]'
+      alb.ingress.kubernetes.io/ssl-redirect: '443'
+      alb.ingress.kubernetes.io/certificate-arn: 'arn:aws:acm:eu-central-1:637423460784:certificate/1e6bb41c-5fcd-4d00-b4ec-ffa765aa7eb8'
+    aws:
+      serviceType: ClusterIP
+      backendProtocolVersion: GRPC
