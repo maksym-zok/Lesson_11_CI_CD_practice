@@ -9,11 +9,6 @@ configs:
       url: git@github.com:maksym-zok/Lesson_11_CI_CD_practice.git
       sshPrivateKey: |
         -----BEGIN OPENSSH PRIVATE KEY-----
-        b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
-        QyNTUxOQAAACD5r90arHNvl+1yGl2RsVxsLYl7R62MX2n3rreB8dDwGgAAAKDGi5oExoua
-        BAAAAAtzc2gtZWQyNTUxOQAAACD5r90arHNvl+1yGl2RsVxsLYl7R62MX2n3rreB8dDwGg
-        AAAECwE22b7b3/tPLCXXLvQdnUt8vf0CWSH3+WK6b1T3deqvmv3Rqsc2+X7XIaXZGxXGwt
-        iXtHrYxfafeut4Hx0PAaAAAAFm1ha3N5bS5obHl2YUBnbWFpbC5jb20BAgMEBQYH
         -----END OPENSSH PRIVATE KEY-----
   repositories:
     devops-course:
